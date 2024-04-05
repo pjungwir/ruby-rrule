@@ -9,7 +9,7 @@ module RRule
     def initialize(rrule, dtstart: Time.now, tzid: 'UTC', exdate: [], max_year: nil)
       @tz = tzid
       @rrule = rrule
-      @dtstart = dtstart.is_a?(Date) ? dtstart : floor_to_seconds_in_timezone(dtstart)
+      @dtstart = floor_to_seconds_in_timezone(dtstart)
       @exdate = exdate
       @options = parse_options(rrule)
       @frequency_type = Frequency.for_options(options)
@@ -97,6 +97,8 @@ module RRule
     attr_reader :options, :max_year, :max_date, :frequency_type
 
     def floor_to_seconds_in_timezone(date)
+      return date if date.is_a?(Date)
+
       # This removes all sub-second and floors it to the second level.
       # Sub-second level calculations breaks a lot of assumptions in this
       # library and rounding it may also cause unexpected inequalities.
